@@ -44,7 +44,7 @@ Después, verificá que haya cargado la lista:
 
 La línea del log dice cuántas IP cargó de las que tiene la lista (por ejemplo, `329 IP de 329 en el feed`) y si la descarga fue completa o por familia.
 
-Se puede volver a importar cuando quieras: reemplaza el script y el scheduler, no borra las listas y no toca las reglas raw si ya están las 4 (si las habilitaste, siguen habilitadas).
+Se puede volver a importar cuando quieras: reemplaza el script y el scheduler y no borra las listas. Después de reimportar, revisá las reglas raw y volvé a habilitar las que tenías activas.
 
 ## Uso recomendado
 
@@ -74,7 +74,7 @@ Al principio del script `c2-botnet-update` (en `/system script`):
 
 ## Versiones
 
-- **v3 (05/11/2026)**: no se cargaban las últimas IP de la lista, porque la respuesta de botnet.cl ya pasa los 63 KB que RouterOS (v6 y v7) puede leer en un script. Ahora, si llega cortada, se pide por familia. Corre cada 1 hora y las IP vencen a las 3 horas. Si lo tenés instalado, volvé a importarlo y revisá que las reglas raw sigan como las tenías.
+- **v3 (05/11/2026)**: no se cargaban las últimas IP de la lista, porque la respuesta de botnet.cl ya pasa los 63 KB que RouterOS (v6 y v7) puede leer en un script. Ahora, si llega cortada, se pide por familia. Corre cada 1 hora y las IP vencen a las 3 horas. Si lo tenés instalado, volvé a importarlo y después volvé a habilitar las reglas raw que tenías activas.
 - **v2 (30/10/2026)**: primera versión publicada.
 
 ## Desinstalar
