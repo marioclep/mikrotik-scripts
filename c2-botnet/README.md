@@ -10,7 +10,7 @@ La lista de C2 la publica [botnet.cl](https://botnet.cl/api/v2/c2), proyecto de 
 
 - Crea el script `c2-botnet-update` y un scheduler que lo corre cada 1 hora.
 - El script descarga la lista de C2 y la carga en la address-list `C2 BOTNET` con un vencimiento de 3 horas. Si una IP deja de aparecer en la fuente, sale sola de la lista.
-- RouterOS v6 lee como máximo 63 KB por descarga y la lista de botnet.cl ya es más grande. Si la descarga llega cortada, el script pide la lista por familia de botnet (`?family=`) y la arma completa. En v7, si entra entera, hace una sola consulta.
+- RouterOS (v6 y v7) lee como máximo 63 KB por descarga dentro de un script, y la lista de botnet.cl ya es más grande. Si la descarga llega cortada, el script pide la lista por familia de botnet (`?family=`) y la arma completa. Si algún día la lista vuelve a entrar en una sola descarga, hace una sola consulta.
 - Avisa en el log si falta alguna IP, si falla alguna familia o si una familia llega cortada.
 - Solo carga IP públicas sueltas: descarta redes, IP privadas, loopback, CGNAT, link-local y multicast.
 - Si la respuesta trae más de 2000 IP, viene vacía o no se puede descargar, no toca la lista.
@@ -74,7 +74,7 @@ Al principio del script `c2-botnet-update` (en `/system script`):
 
 ## Versiones
 
-- **v3 (05/11/2026)**: en RouterOS v6 no se cargaban las últimas IP de la lista, porque la respuesta de botnet.cl ya pasa los 63 KB que v6 puede leer. Ahora, si llega cortada, se pide por familia. Corre cada 1 hora y las IP vencen a las 3 horas. Al reimportar, respeta el estado de las reglas raw. Si lo tenés instalado en v6, volvé a importarlo.
+- **v3 (05/11/2026)**: no se cargaban las últimas IP de la lista, porque la respuesta de botnet.cl ya pasa los 63 KB que RouterOS (v6 y v7) puede leer en un script. Ahora, si llega cortada, se pide por familia. Corre cada 1 hora y las IP vencen a las 3 horas. Si lo tenés instalado, volvé a importarlo y revisá que las reglas raw sigan como las tenías.
 - **v2 (30/10/2026)**: primera versión publicada.
 
 ## Desinstalar
