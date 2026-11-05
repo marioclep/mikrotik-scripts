@@ -8,8 +8,10 @@ La lista de C2 la publica [botnet.cl](https://botnet.cl/api/v2/c2), proyecto de 
 
 ## Qué hace
 
-- Crea el script `c2-botnet-update` y un scheduler que lo corre cada 10 minutos.
-- El script descarga la lista de C2 y la carga en la address-list `C2 BOTNET` con un vencimiento de 35 minutos. Si una IP deja de aparecer en la fuente, sale sola de la lista.
+- Crea el script `c2-botnet-update` y un scheduler que lo corre cada 1 hora.
+- El script descarga la lista de C2 y la carga en la address-list `C2 BOTNET` con un vencimiento de 3 horas. Si una IP deja de aparecer en la fuente, sale sola de la lista.
+- RouterOS v6 lee como máximo 63 KB por descarga y la lista de botnet.cl ya es más grande. Si la descarga llega cortada, el script pide la lista por familia de botnet (`?family=`) y la arma completa. En v7, si entra entera, hace una sola consulta.
+- Avisa en el log si falta alguna IP, si falla alguna familia o si una familia llega cortada.
 - Solo carga IP públicas sueltas: descarta redes, IP privadas, loopback, CGNAT, link-local y multicast.
 - Si la respuesta trae más de 2000 IP, viene vacía o no se puede descargar, no toca la lista.
 - Crea 4 reglas en `/ip firewall raw`, **todas deshabilitadas**:
@@ -40,7 +42,9 @@ Después, verificá que haya cargado la lista:
 /ip firewall address-list print count-only where list="C2 BOTNET"
 ```
 
-Se puede volver a importar cuando quieras: reemplaza lo instalado antes.
+La línea del log dice cuántas IP cargó de las que tiene la lista (por ejemplo, `329 IP de 329 en el feed`) y si la descarga fue completa o por familia.
+
+Se puede volver a importar cuando quieras: reemplaza el script y el scheduler, no borra las listas y no toca las reglas raw si ya están las 4 (si las habilitaste, siguen habilitadas).
 
 ## Uso recomendado
 
@@ -64,9 +68,14 @@ Al principio del script `c2-botnet-update` (en `/system script`):
 
 | Variable | Valor por defecto | Para qué sirve |
 |---|---|---|
-| `entryTimeout` | `35m` | Vencimiento de cada IP. Si la fuente no responde por más de este tiempo, la lista queda vacía. |
+| `entryTimeout` | `3h` | Vencimiento de cada IP. Si la fuente no responde por más de este tiempo, la lista queda vacía. |
 | `maxEntries` | `2000` | Tope de IP por corrida. Si se supera, no se carga nada. |
 | `checkCert` | `no` | Validar el certificado HTTPS (`yes` o `yes-without-crl`). Requiere importar antes la CA raíz en `/certificate`. |
+
+## Versiones
+
+- **v3 (05/11/2026)**: en RouterOS v6 no se cargaban las últimas IP de la lista, porque la respuesta de botnet.cl ya pasa los 63 KB que v6 puede leer. Ahora, si llega cortada, se pide por familia. Corre cada 1 hora y las IP vencen a las 3 horas. Al reimportar, respeta el estado de las reglas raw. Si lo tenés instalado en v6, volvé a importarlo.
+- **v2 (30/10/2026)**: primera versión publicada.
 
 ## Desinstalar
 
